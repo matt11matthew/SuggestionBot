@@ -1,0 +1,30 @@
+{
+  "database": {
+    "host": {
+      "address": "127.0.0.1",
+      "port": 3306
+    },
+    "auth": {
+      "username": "matthew",
+      "password": "matthew"
+    },
+    "database": "suggestions"
+  },
+  "discord": {
+    "messages": {
+      "ready": {
+        "title": "Suggestion Bot",
+        "color": -1,
+        "description": "Now Ready!"
+      }
+
+    },
+    "auth": {
+      "token": "",
+      "guildId": 1174388099653042176
+    },
+    "channels": {
+      "suggestions": 1185312669545279528
+    }
+  }
+}
