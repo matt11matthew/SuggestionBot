@@ -91,6 +91,11 @@ public class DiscordListener  extends ListenerAdapter {
     public void onMessageReceived(MessageReceivedEvent event) {
         if (event.getMember() == null) return;
         if (event.getMember().getUser().isBot()) return;
+        if (discordHandler.isReady()){
+            if (event.getMessage().getChannel().getIdLong()==config.discord.channels.suggestions){
+                event.getMessage().delete().queue();
+            }
+        }
 
     }
 
@@ -99,17 +104,20 @@ public class DiscordListener  extends ListenerAdapter {
 
         if (event.getModalId().equals("suggestion")) {
             ModalMapping body = event.getInteraction().getValue("body");
-            createSuggestion(event.getUser().getIdLong(), body.getAsString());
+            createSuggestion(event.getUser().getAsMention(), event.getUser().getIdLong(), body.getAsString());
             event.reply("Thanks for your request!").setEphemeral(true).queue();
         }
     }
 
 
-    private void createSuggestion(long idLong, String asString) {
+
+    private void createSuggestion(String mention, long idLong, String asString) {
         TextChannel textChannelById = this.discordHandler.getGuild().getTextChannelById(this.config.discord.channels.suggestions);
 
         Suggestion suggestion = new Suggestion(UUID.randomUUID(), 0, idLong, asString, SuggestionStatus.PENDING);
-        Message complete = textChannelById.sendMessageEmbeds(new EmbedBuilder().setTitle("New Suggestion " + suggestion.getId().toString()).setColor(Color.WHITE).setFooter("By " + this.discordHandler.getGuild().getMemberById(idLong).getAsMention()).setDescription(asString).build()).complete();
+
+        textChannelById.sendMessage("@everyone").queue(message ->message.delete().queue());
+        Message complete = textChannelById.sendMessageEmbeds(new EmbedBuilder().setTitle("New Suggestion " + suggestion.getId().toString()).setColor(Color.WHITE).setFooter("By " + mention).setDescription(asString).build()).complete();
 
         System.out.println(complete.getIdLong());
         suggestion.setMessageId(complete.getIdLong());
@@ -132,8 +140,10 @@ public class DiscordListener  extends ListenerAdapter {
             switch (subcommandName){
                 case "deny":
                     OptionMapping suggestionId3 = event.getInteraction().getOption("suggestion_id3");
+                    System.out.println(suggestionId3.getAsString());
                     UUID uuid = UUID.fromString(suggestionId3.getAsString());
                     if (uuid!=null&&suggestionMap.containsKey(uuid)){
+
                         event.reply("Deny " + event.getInteraction().getOption("suggestion_id3").getAsString()).queue();
                         Suggestion suggestion = suggestionMap.get(uuid);
                         suggestion.setStatus(SuggestionStatus.DENY);
@@ -148,7 +158,9 @@ public class DiscordListener  extends ListenerAdapter {
                     break;
                 case "implement":
                     OptionMapping suggestionId2 = event.getInteraction().getOption("suggestion_id2");
-                     uuid = UUID.fromString(suggestionId2.getAsString());
+                    System.out.println(suggestionId2.getAsString());
+                    uuid = UUID.fromString(suggestionId2.getAsString());
+
                     if (uuid!=null&&suggestionMap.containsKey(uuid)){
                         event.reply("Implemented " + event.getInteraction().getOption("suggestion_id2").getAsString()).queue();
                         Suggestion suggestion = suggestionMap.get(uuid);
@@ -165,6 +177,7 @@ public class DiscordListener  extends ListenerAdapter {
                 case "accept":
 
                     OptionMapping suggestionId = event.getInteraction().getOption("suggestion_id");
+                    System.out.println(suggestionId.getAsString());
                     uuid = UUID.fromString(suggestionId.getAsString());
                     if (uuid!=null&&suggestionMap.containsKey(uuid)){
                         event.reply("Accepted " + event.getInteraction().getOption("suggestion_id").getAsString()).queue();

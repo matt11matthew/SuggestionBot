@@ -50,6 +50,10 @@ public class DiscordHandler extends Handler {
         this.jda.addEventListener(discordListener);
     }
 
+    public boolean isReady() {
+        return ready;
+    }
+
     public void onReady() {
         this.guild =  this.jda.getGuildById(this.config.discord.auth.guildId);
         this.guild.updateCommands().addCommands(

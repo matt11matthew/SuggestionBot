@@ -24,7 +24,7 @@ public class SuggestionBot {
     private final BasicLogger logger;
     private boolean running;
 
-    public static boolean DEBUG = true;
+    public static boolean DEBUG  =true;
 
     private OnMessage onMessage;
 
