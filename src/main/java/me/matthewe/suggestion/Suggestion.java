@@ -6,13 +6,13 @@ import java.util.UUID;
  * Created by Matthew E on 12/16/2023 at 12:45 PM for the project SuggestionBot
  */
 public class Suggestion {
-    private UUID id;
+    private int id;
     private long messageId;
     private long user;
     private String description;
     private SuggestionStatus status;
 
-    public Suggestion(UUID id, long messageId, long user, String description, SuggestionStatus status) {
+    public Suggestion(int id, long messageId, long user, String description, SuggestionStatus status) {
         this.id = id;
         this.messageId = messageId;
         this.user = user;
@@ -20,7 +20,7 @@ public class Suggestion {
         this.status = status;
     }
 
-    public void setId(UUID id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -44,7 +44,7 @@ public class Suggestion {
 
     }
 
-    public UUID getId() {
+    public int getId() {
         return id;
     }
 

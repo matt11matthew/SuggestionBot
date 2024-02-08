@@ -50,7 +50,7 @@ public class DiscordListener  extends ListenerAdapter {
     private SuggestionBot suggestionBot;
     private Config config;
 
-    private Map<UUID, Suggestion> suggestionMap;
+    private Map<Integer, Suggestion> suggestionMap;
 
 
 
@@ -114,10 +114,12 @@ public class DiscordListener  extends ListenerAdapter {
     private void createSuggestion(String mention, long idLong, String asString) {
         TextChannel textChannelById = this.discordHandler.getGuild().getTextChannelById(this.config.discord.channels.suggestions);
 
-        Suggestion suggestion = new Suggestion(UUID.randomUUID(), 0, idLong, asString, SuggestionStatus.PENDING);
+        int id = suggestionMap.values().size()+1;
+
+        Suggestion suggestion = new Suggestion(id, 0, idLong, asString, SuggestionStatus.PENDING);
 
         textChannelById.sendMessage("@everyone").queue(message ->message.delete().queue());
-        Message complete = textChannelById.sendMessageEmbeds(new EmbedBuilder().setTitle("New Suggestion " + suggestion.getId().toString()).setColor(Color.WHITE).setFooter("By " + mention).setDescription(asString).build()).complete();
+        Message complete = textChannelById.sendMessageEmbeds(new EmbedBuilder().setTitle("New Suggestion " + suggestion.getId()).setColor(Color.WHITE).setFooter("By " + mention).setDescription(asString).build()).complete();
 
         System.out.println(complete.getIdLong());
         suggestion.setMessageId(complete.getIdLong());
@@ -141,16 +143,16 @@ public class DiscordListener  extends ListenerAdapter {
                 case "deny":
                     OptionMapping suggestionId3 = event.getInteraction().getOption("suggestion_id3");
                     System.out.println(suggestionId3.getAsString());
-                    UUID uuid = UUID.fromString(suggestionId3.getAsString());
-                    if (uuid!=null&&suggestionMap.containsKey(uuid)){
+                    int id = suggestionId3.getAsInt();
+                    if (suggestionMap.containsKey(id)){
 
                         event.reply("Deny " + event.getInteraction().getOption("suggestion_id3").getAsString()).queue();
-                        Suggestion suggestion = suggestionMap.get(uuid);
+                        Suggestion suggestion = suggestionMap.get(id);
                         suggestion.setStatus(SuggestionStatus.DENY);
                         this.discordHandler.getDatabaseHandler().updateSuggestionInDatabase(suggestion);
                         TextChannel textChannelById = this.discordHandler.getGuild().getTextChannelById(this.config.discord.channels.suggestions);
                         textChannelById.retrieveMessageById(suggestion.getMessageId()).queue(message -> {
-                            message                        .editMessageEmbeds(new EmbedBuilder().setTitle("Suggestion Denied " + suggestion.getId().toString()).setColor(Color.RED).setFooter("Deny!").setDescription(suggestion.getDescription()).build()).queue();
+                            message                        .editMessageEmbeds(new EmbedBuilder().setTitle("Suggestion Denied " + suggestion.getId()).setColor(Color.RED).setFooter("Deny!").setDescription(suggestion.getDescription()).build()).queue();
                         }, throwable -> {});
                     } else {
                         event.reply("Please enter a valid ID!").queue();
@@ -159,16 +161,15 @@ public class DiscordListener  extends ListenerAdapter {
                 case "implement":
                     OptionMapping suggestionId2 = event.getInteraction().getOption("suggestion_id2");
                     System.out.println(suggestionId2.getAsString());
-                    uuid = UUID.fromString(suggestionId2.getAsString());
-
-                    if (uuid!=null&&suggestionMap.containsKey(uuid)){
-                        event.reply("Implemented " + event.getInteraction().getOption("suggestion_id2").getAsString()).queue();
-                        Suggestion suggestion = suggestionMap.get(uuid);
+                     id = suggestionId2.getAsInt();
+                    if (suggestionMap.containsKey(id)){
+                        event.reply("Implemented " + event.getInteraction().getOption("suggestion_id2").getAsInt()).queue();
+                        Suggestion suggestion = suggestionMap.get(id);
                         suggestion.setStatus(SuggestionStatus.IMPLEMENTED);
                         this.discordHandler.getDatabaseHandler().updateSuggestionInDatabase(suggestion);
                         TextChannel textChannelById = this.discordHandler.getGuild().getTextChannelById(this.config.discord.channels.suggestions);
                         textChannelById.retrieveMessageById(suggestion.getMessageId()).queue(message -> {
-                            message                        .editMessageEmbeds(new EmbedBuilder().setTitle("Suggestion Implemented " + suggestion.getId().toString()).setColor(Color.YELLOW).setFooter("Implemented").setDescription(suggestion.getDescription()).build()).queue();
+                            message                        .editMessageEmbeds(new EmbedBuilder().setTitle("Suggestion Implemented " + suggestion.getId()).setColor(Color.YELLOW).setFooter("Implemented").setDescription(suggestion.getDescription()).build()).queue();
                         }, throwable -> {});
                     } else {
                         event.reply("Please enter a valid ID!").queue();
@@ -178,15 +179,15 @@ public class DiscordListener  extends ListenerAdapter {
 
                     OptionMapping suggestionId = event.getInteraction().getOption("suggestion_id");
                     System.out.println(suggestionId.getAsString());
-                    uuid = UUID.fromString(suggestionId.getAsString());
-                    if (uuid!=null&&suggestionMap.containsKey(uuid)){
+                    id = suggestionId.getAsInt();
+                    if (suggestionMap.containsKey(id)){
                         event.reply("Accepted " + event.getInteraction().getOption("suggestion_id").getAsString()).queue();
-                        Suggestion suggestion = suggestionMap.get(uuid);
+                        Suggestion suggestion = suggestionMap.get(id);
                         suggestion.setStatus(SuggestionStatus.ACCEPTED);
                         this.discordHandler.getDatabaseHandler().updateSuggestionInDatabase(suggestion);
                         TextChannel textChannelById = this.discordHandler.getGuild().getTextChannelById(this.config.discord.channels.suggestions);
                         textChannelById.retrieveMessageById(suggestion.getMessageId()).queue(message -> {
-                            message                        .editMessageEmbeds(new EmbedBuilder().setTitle("Suggestion Accepted " + suggestion.getId().toString()).setColor(Color.GREEN).setFooter("Accepted").setDescription(suggestion.getDescription()).build()).queue();
+                            message                        .editMessageEmbeds(new EmbedBuilder().setTitle("Suggestion Accepted " + suggestion.getId()).setColor(Color.GREEN).setFooter("Accepted").setDescription(suggestion.getDescription()).build()).queue();
                         }, throwable -> {});
                     } else {
                         event.reply("Please enter a valid ID!").queue();

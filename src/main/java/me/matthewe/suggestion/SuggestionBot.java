@@ -70,12 +70,12 @@ public class SuggestionBot {
     private void setupConfig() {
         String path = "config.json";
         if (DEBUG) {
-            path = "C:\\Users\\Matthew Eisenberg\\IntellijNewFolder\\CS2\\Projs\\SuggestionBot\\src\\main\\resources\\config.json";
+            path = "C:\\Users\\Matt\\IdeaProjects\\Minecraft\\Commissions\\SuggestionBot\\src\\main\\resources\\config.json";
         }
 
         String tokenPath = "token.txt";
         if (DEBUG) {
-            tokenPath = "C:\\Users\\Matthew Eisenberg\\IntellijNewFolder\\CS2\\Projs\\SuggestionBot\\src\\main\\resources\\token.txt";
+            tokenPath = "C:\\Users\\Matt\\IdeaProjects\\Minecraft\\Commissions\\SuggestionBot\\src\\main\\resources\\token.txt";
         }
         Config config = loadJsonObjectFromFile(new File(path), Config.class);
         config.discord.auth.token = FileUtils.readFileToString(new File(tokenPath));

@@ -51,11 +51,11 @@ public class DatabaseHandler  extends Handler {
  */
     private void createTablesIfNotExist() {
         String ticketsTable = "CREATE TABLE IF NOT EXISTS suggestions (\n" +
-                "    id VARCHAR(255) PRIMARY KEY,\n" +
+                "    id INT,\n" +
                 "    userId BIGINT,\n" +
                 "    messageId BIGINT,\n" +
                 "    status VARCHAR(255),\n" +
-                "    description TEXT\n" +
+                "    description TEXT" +
                 ");";
 
         try {
@@ -78,12 +78,12 @@ public class DatabaseHandler  extends Handler {
         String sql = "DELETE FROM suggestions WHERE id = ?;";
 
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
-            pstmt.setString(1, suggestion.getId().toString());
+            pstmt.setInt(1, suggestion.getId());
             int affectedRows = pstmt.executeUpdate();
             if (affectedRows > 0) {
-                System.out.println("Suggestion with ID " + suggestion.getId().toString() + " was deleted successfully.");
+                System.out.println("Suggestion with ID " + suggestion.getId() + " was deleted successfully.");
             } else {
-                System.out.println("No suggestion found with ID " + suggestion.getId().toString());
+                System.out.println("No suggestion found with ID " + suggestion.getId());
             }
         } catch (SQLException e) {
             System.err.println("Error deleting suggestion: " + e.getMessage());
@@ -98,7 +98,7 @@ public class DatabaseHandler  extends Handler {
                 "userId = ?, " +
                 "messageId = ?, " +
                 "status = ?, " +
-                "description = ? " +
+                "description = ?" +
 
                 "WHERE id = ?;";
 
@@ -107,7 +107,7 @@ public class DatabaseHandler  extends Handler {
             pstmt.setLong(2, suggestion.getMessageId());
             pstmt.setString(3, suggestion.getStatus().toString());
             pstmt.setString(4, suggestion.getDescription()); // Assuming ticketStatus is an enum
-            pstmt.setString(5, suggestion.getId().toString()); // Assuming ticketStatus is an enum
+            pstmt.setInt(5, suggestion.getId()); // Assuming ticketStatus is an enum
 
             int affectedRows = pstmt.executeUpdate();
             if (affectedRows > 0) {
@@ -142,7 +142,7 @@ public class DatabaseHandler  extends Handler {
 
             while (rs.next()) {
                 Suggestion ticket = new Suggestion();
-                ticket.setId(UUID.fromString(rs.getString("id")));
+                ticket.setId(rs.getInt("id"));
                 ticket.setUser(rs.getLong("userId"));
                 ticket.setMessageId(rs.getLong("messageId"));
                 ticket.setStatus(SuggestionStatus.valueOf(rs.getString("status")));
@@ -182,7 +182,7 @@ public class DatabaseHandler  extends Handler {
                 pstmt.setLong(2, ticket.getMessageId());
                 pstmt.setString(3, ticket.getStatus().toString());
                 pstmt.setString(4, ticket.getDescription()); // Assuming ticketStatus is an enum
-                pstmt.setString(5, ticket.getId().toString()); // Assuming ticketStatus is an enum
+                pstmt.setInt(5, ticket.getId()); // Assuming ticketStatus is an enum
 
 
                 pstmt.addBatch();
@@ -207,7 +207,7 @@ public class DatabaseHandler  extends Handler {
         String sql = "INSERT INTO suggestions (id, userId, messageId, status, description) VALUES (?, ?, ?, ?, ?);";
 
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
-            pstmt.setString(1, ticket.getId().toString());
+            pstmt.setInt(1, ticket.getId());
             pstmt.setLong(2, ticket.getUser());
             pstmt.setLong(3, ticket.getMessageId());
             pstmt.setString(4, ticket.getStatus().toString());
